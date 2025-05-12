@@ -6,7 +6,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@OpenAPIDefinition(info = @Info(title = "Cryxie API", version = "1", description = "API desenvolvida para Cryxie Cli"))
+@OpenAPIDefinition(info = @Info(title = "Votação API", version = "1", description = "API desenvolvida para Sistemas Distribuidos")
+
+)
 
 public class MainApplication {
 

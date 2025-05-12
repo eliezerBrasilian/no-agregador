@@ -9,10 +9,22 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+    final int PORTA_STOMP = 61613;
+    final String NOME_SERVICO_EM_DOCKER_COMPOSE = "rabbitmq";
 
+    // @Override
+    // public void configureMessageBroker(MessageBrokerRegistry config) {
+    // config.enableSimpleBroker("/topic");
+    // config.setApplicationDestinationPrefixes("/app");
+    // }
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
+        // Dispara tudo pro RabbitMQ
+        config.enableStompBrokerRelay("/topic")
+                .setRelayHost(NOME_SERVICO_EM_DOCKER_COMPOSE)
+                .setRelayPort(PORTA_STOMP)
+                .setClientLogin("guest")
+                .setClientPasscode("guest");
         config.setApplicationDestinationPrefixes("/app");
     }
 
