@@ -10,10 +10,10 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.cryxie</groupId>
-    <artifactId>cryxie_api</artifactId>
+    <groupId>com.votacao_core</groupId>
+    <artifactId>votacao_core</artifactId>
     <version>1</version>
-    <name>cryxie-api</name>
+    <name>votacao-core</name>
     <description>Core API para microserviços</description>
 
     <properties>

@@ -3,10 +3,8 @@ package com.app.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.app.utils.AppUtils;
-
 @RestController
-@RequestMapping(AppUtils.baseUrl + "/hello")
+@RequestMapping("votacao-core/hello")
 
 public class HelloController {
 
