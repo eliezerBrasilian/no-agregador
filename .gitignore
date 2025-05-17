@@ -40,5 +40,4 @@ assinatura_cancelada.txt
 assinatura_recuperada.txt
 payload_checkout_completado.txt
 payload_pagamento_deu_certo.txt
-src/main/resources
 docker-compose.yml
