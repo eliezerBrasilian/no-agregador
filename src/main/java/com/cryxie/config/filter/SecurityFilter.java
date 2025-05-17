@@ -2,7 +2,6 @@ package com.cryxie.config.filter;
 
 import com.cryxie.config.TokenJwt;
 import com.cryxie.models.User;
-import com.cryxie.repositories.UserRepository;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,9 +22,6 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     TokenJwt tokenServiceImpl;
 
-    @Autowired
-    UserRepository userRepository;
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
             HttpServletResponse response,
@@ -45,23 +41,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                 var authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
                         userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            } else {
-                var userModelOptional = userRepository.findByEmail(email);
-
-                if (userModelOptional.isPresent()) {
-                    var userModel = userModelOptional.get();
-                    var userDetails = org.springframework.security.core.userdetails.User.builder()
-                            .username(userModel.email)
-                            .password(userModel.getPassword())
-                            .authorities(userModel.getAuthorities())
-                            .build();
-                    var authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
-                            userDetails.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
             }
-
         }
         filterChain.doFilter(request, response);
     }

@@ -1,10 +1,9 @@
-FROM openjdk:22
-#WORKDIR /usr/src/app
+# gateway/Dockerfile
+FROM eclipse-temurin:17-jdk
 
-# Endereço da pasta target
+# Ajuste aqui se seu jar tiver nome fixo diferente
 ARG JAR_FILE=target/*.jar
 
 COPY ${JAR_FILE} app.jar
 
-# Comandos que serão executados assim que o container inicializar
 ENTRYPOINT ["java", "-jar", "/app.jar"]
