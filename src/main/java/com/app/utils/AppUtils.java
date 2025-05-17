@@ -1,4 +1,4 @@
-package com.cryxie.utils;
+package com.app.utils;
 
 import org.springframework.stereotype.Component;
 
