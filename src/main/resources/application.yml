@@ -1,52 +1,12 @@
 server:
-  port: 8761
+  port: 8080
 
 spring:
-  application:
-    name: eureka-server
-  main:
-    web-application-type: servlet
-    allow-bean-definition-overriding: true
-  cloud:
-    loadbalancer:
-      retry:
-        enabled: true
-  data:
-    mongodb:
-      host: localhost
-      port: 27017
-      database: votacao
   rabbitmq:
     host: localhost
     port: 5672
-    username: guest
-    password: guest
-    listener:
-      simple:
-        retry:
-          enabled: false
-    template:
-      retry:
-        enabled: false
+    username: user
+    password: password
 
-eureka:
-  client:
-    register-with-eureka: false
-    fetch-registry: false
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-  instance:
-    prefer-ip-address: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-
-springdoc:
-  swagger-ui:
-    pathsToMatch: /v3/api-docs/**
+core:
+  queue: core-processing-queue
