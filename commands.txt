@@ -1,2 +1,4 @@
- ./gradlew bootRun --args='--server.port=8081'
- ./gradlew bootRun --args='--server.port=8082'
+./gradlew bootRun --args='--server.port=8081 --core.node-id=NODE-1'
+./gradlew bootRun --args='--server.port=8082 --core.node-id=NODE-2'
+cd C:\Users\camil\OneDrive\Documentos\DEV\PROJETO-UFV\backend-sistemas-distribuidos
+./gradlew bootRun --args='--server.port=9123'
