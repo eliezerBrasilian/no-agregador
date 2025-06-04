@@ -10,8 +10,11 @@ public class RabbitConfig {
     @Value("${core.queue}")
     private String nomeFila;
 
+    @Value("${core.node-id}")
+    private String nodeId;
+
     @Bean
-    public Queue queue(){
+    public Queue queue() {
         return new Queue(nomeFila, true);
     }
 }

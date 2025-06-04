@@ -10,3 +10,4 @@ spring:
 
 core:
   queue: core-processing-queue
+  node-id: RASTAFARI
