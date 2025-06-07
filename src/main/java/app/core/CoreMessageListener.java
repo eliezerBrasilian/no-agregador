@@ -4,6 +4,10 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.annotation.PostConstruct;
 
 @Component
@@ -21,7 +25,13 @@ public class CoreMessageListener {
     }
 
     @RabbitListener(queues = "${core.queue}")
-    public void handleMessage(Message payload) {
+    public void handleMessage(String payload) throws JsonMappingException, JsonProcessingException {
+
+        System.out.println(payload);
+       
+        Message message = new ObjectMapper().readValue(payload, Message.class);
+
+
         System.out.printf(">> node: [%s] Mensagem recebida: %s%n", nodeId, payload);
     }
 }
