@@ -6,6 +6,8 @@ public class Message {
     public int valor;
     public String datetime;
 
+    public Message(){}
+
     public Message(
             String type,
             String object,
