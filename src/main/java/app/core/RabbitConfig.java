@@ -17,4 +17,10 @@ public class RabbitConfig {
     public Queue queue() {
         return new Queue(nomeFila, true);
     }
+
+    @Bean
+    public Queue backendResponseQueue() {
+        return new Queue("backend-response-queue", true);
+    }
+
 }

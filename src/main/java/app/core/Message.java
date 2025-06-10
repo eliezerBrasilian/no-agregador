@@ -1,9 +1,16 @@
 package app.core;
 
-public record Message(
-    String type,
-    String object,
-    String valor,
-    String datetime
-    ){  
+public class Message {
+    public String type;
+    public String object;
+    public int valor;
+    public String datetime;
+
+    public Message(
+            String type,
+            String object,
+            int valor,
+            String datetime) {
+    }
+
 }
