@@ -8,7 +8,7 @@ public class Message {
 
     public Message(
             String type,
-            String object,
+            String object, // identifcadior
             int valor,
             String datetime) {
     }
