@@ -3,15 +3,18 @@ server:
 
 spring:
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: user
-    password: password
+    host: chimpanzee.rmq.cloudamqp.com
+    port: 5671
+    username: edxgujmk
+    password: Wm1vy2ea99LIfZh-ZZyl3DhWlLDlNcdH
+    virtual-host: edxgujmk
+    ssl:
+      enabled: true
   amqp:
     deserialization:
       trust:
         all: true
 
 core:
-  queue: core-fila-de-candidatos
+  queue: lotes_de_dados
   node-id: RASTAFARI
