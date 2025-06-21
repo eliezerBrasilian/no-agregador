@@ -1,4 +1,4 @@
-package app.core;
+package app;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.beans.factory.annotation.Value;

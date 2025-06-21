@@ -1,18 +1,10 @@
-package app.core;
+package app;
 
-public class Message {
-    public String type;
-    public String object;
-    public int valor;
-    public String datetime;
+import java.time.LocalDateTime;
 
-    public Message(){}
-
-    public Message(
-            String type,
-            String object, // identifcadior
-            int valor,
-            String datetime) {
-    }
-
+public record Message(
+        String type,
+        String objectIdentifier,
+        int valor,
+        LocalDateTime datetime) {
 }
