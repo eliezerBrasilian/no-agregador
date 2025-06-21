@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -25,13 +24,11 @@ public class CoreMessageListener {
     @Value("${core.queue}")
     private String nomeFila;
 
-    private final RabbitTemplate rabbitTemplate;
     private final DadoAgregadoRepository repository;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public CoreMessageListener(RabbitTemplate rabbitTemplate, DadoAgregadoRepository repository) {
-        this.rabbitTemplate = rabbitTemplate;
+    public CoreMessageListener(DadoAgregadoRepository repository) {
         this.repository = repository;
     }
 
@@ -84,7 +81,7 @@ public class CoreMessageListener {
                     String.class);
 
             System.out.printf("Resposta do backend Node: %s%n", postResponse.getBody());
-            // Opcional: reenviar a resposta via RabbitMQ para o backend ou outro consumidor
+
             // rabbitTemplate.convertAndSend("backend-response-queue", dadosAgregados);
 
             System.out.println(dadosAgregados);
