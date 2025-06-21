@@ -55,7 +55,6 @@ public class CoreMessageListener {
         System.out.printf(">> node: [%s] Mensagem recebida: %s%n", nodeId, payload);
 
         try {
-
             String url = "https://agregador-node.onrender.com/api/aggregator/results";
 
             ResponseEntity<PayloadAgregadoCore> response = restTemplate.getForEntity(url, PayloadAgregadoCore.class);
@@ -77,8 +76,17 @@ public class CoreMessageListener {
                 System.err.println("Resposta HTTP veio nula ou sem dados agregados.");
             }
 
+            String urlPostNodeBackend = "http://localhost:4012/api/votar/update-from-no-agregador";
+
+            ResponseEntity<String> postResponse = restTemplate.postForEntity(
+                    urlPostNodeBackend,
+                    dadosAgregados,
+                    String.class);
+
+            System.out.printf("Resposta do backend Node: %s%n", postResponse.getBody());
             // Opcional: reenviar a resposta via RabbitMQ para o backend ou outro consumidor
-            rabbitTemplate.convertAndSend("backend-response-queue", dadosAgregados);
+            // rabbitTemplate.convertAndSend("backend-response-queue", dadosAgregados);
+
             System.out.println(dadosAgregados);
             System.out.println("Resposta enviada para backend-response-queue.");
 
