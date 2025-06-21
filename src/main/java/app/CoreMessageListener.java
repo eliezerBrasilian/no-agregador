@@ -1,20 +1,19 @@
 package app;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import app.model.DadoAgregado;
+import app.model.DadoAgregadoRepository;
 import jakarta.annotation.PostConstruct;
 
 @Component
@@ -27,11 +26,13 @@ public class CoreMessageListener {
     private String nomeFila;
 
     private final RabbitTemplate rabbitTemplate;
+    private final DadoAgregadoRepository repository;
 
-    private final List<Message> buffer = new CopyOnWriteArrayList<>();
+    private final RestTemplate restTemplate = new RestTemplate();
 
-    public CoreMessageListener(RabbitTemplate rabbitTemplate) {
+    public CoreMessageListener(RabbitTemplate rabbitTemplate, DadoAgregadoRepository repository) {
         this.rabbitTemplate = rabbitTemplate;
+        this.repository = repository;
     }
 
     @PostConstruct
@@ -39,50 +40,52 @@ public class CoreMessageListener {
         System.out.println(">> Core Node UP [" + nodeId + "] ouvindo queue: " + nomeFila);
     }
 
-    public record PayloadCore(
-            String batchId,
-            String sourceNodeId,
-            List<Message> dataPoints) {
+    public record PayloadCore(String batchId, String sourceNodeId, List<Message> dataPoints) {
+    }
+
+    public record Message(String type, String objectIdentifier, int valor,
+            @JsonDeserialize(using = LocalDateTimeFromLongDeserializer.class) LocalDateTime datetime) {
+    }
+
+    public record PayloadAgregadoCore(String batchId, String sourceNodeId, List<DadoAgregado> dadosAgregados) {
     }
 
     @RabbitListener(queues = "${core.queue}")
-    public void handleMessage(PayloadCore payload) throws JsonMappingException, JsonProcessingException {
+    public void handleMessage(PayloadCore payload) {
         System.out.printf(">> node: [%s] Mensagem recebida: %s%n", nodeId, payload);
 
-        buffer.addAll(payload.dataPoints());
+        try {
 
-        // minha logica pra enviar dados depois de 5 votos agregados
-        if (buffer.size() >= 2) {
-            PayloadCore loteFinalAgregado = agregar();
-            rabbitTemplate.convertAndSend("backend-response-queue", loteFinalAgregado);
-            buffer.clear();
-            System.out.println(">> Enviado resultado agregado para o backend");
+            String url = "https://agregador-node.onrender.com/api/aggregator/results";
 
-            rabbitTemplate.convertAndSend("backend-response-queue", loteFinalAgregado);
+            ResponseEntity<PayloadAgregadoCore> response = restTemplate.getForEntity(url, PayloadAgregadoCore.class);
 
-            System.out.printf(">> node: [%s] Resposta enviada para o backend", nodeId);
+            PayloadAgregadoCore dadosAgregados = response.getBody();
+
+            if (dadosAgregados != null && dadosAgregados.dadosAgregados() != null) {
+                // Para cada DadoAgregado do retorno, salva/updata no mongo
+                for (DadoAgregado dado : dadosAgregados.dadosAgregados()) {
+                    repository.findByType(dado.type)
+                            .map(existing -> {
+                                existing.lista = dado.lista;
+                                return repository.save(existing);
+                            })
+                            .orElseGet(() -> repository.save(new DadoAgregado(dado.type, dado.lista)));
+                }
+                System.out.println("Banco atualizado com dados do agregador via HTTP GET.");
+            } else {
+                System.err.println("Resposta HTTP veio nula ou sem dados agregados.");
+            }
+
+            // Opcional: reenviar a resposta via RabbitMQ para o backend ou outro consumidor
+            rabbitTemplate.convertAndSend("backend-response-queue", dadosAgregados);
+            System.out.println(dadosAgregados);
+            System.out.println("Resposta enviada para backend-response-queue.");
+
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar ou salvar dados agregados: " + e.getMessage());
+            e.printStackTrace();
         }
-
-    }
-
-    public PayloadCore agregar() {
-        Map<String, Integer> votosPorObjeto = new HashMap<>();
-
-        for (Message m : buffer) {
-            votosPorObjeto.merge(m.objectIdentifier(), m.valor(), Integer::sum);
-        }
-
-        List<Message> resultado = votosPorObjeto.entrySet().stream()
-                .map(e -> new Message(
-                        "voto-final", e.getKey(),
-                        e.getValue(),
-                        LocalDateTime.now()))
-                .toList();
-
-        return new PayloadCore(
-                UUID.randomUUID().toString(),
-                nodeId,
-                resultado);
     }
 
 }
