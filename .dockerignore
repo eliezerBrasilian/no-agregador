@@ -1,0 +1,39 @@
+# Arquivos do Git
+.git
+.gitignore
+
+# Arquivos do IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# Arquivos de build
+build/
+.gradle/
+gradle-app.setting
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Logs
+*.log
+
+# Arquivos temporários
+*.tmp
+*.temp
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de documentação
+README.md
+*.md
+
+# Arquivos de configuração local
+.env
+*.env
+
+# Outros
+node_modules/ 

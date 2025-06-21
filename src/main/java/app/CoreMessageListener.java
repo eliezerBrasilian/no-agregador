@@ -73,7 +73,7 @@ public class CoreMessageListener {
                 System.err.println("Resposta HTTP veio nula ou sem dados agregados.");
             }
 
-            String urlPostNodeBackend = "http://localhost:4012/api/votar/update-from-no-agregador";
+            String urlPostNodeBackend = "http://host.docker.internal:4012/api/votar/update-from-no-agregador";
 
             ResponseEntity<String> postResponse = restTemplate.postForEntity(
                     urlPostNodeBackend,
