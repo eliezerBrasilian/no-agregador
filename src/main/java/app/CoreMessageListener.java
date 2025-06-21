@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.annotation.PostConstruct;
 
@@ -53,16 +52,14 @@ public class CoreMessageListener {
         buffer.addAll(payload.dataPoints());
 
         // minha logica pra enviar dados depois de 5 votos agregados
-        if (buffer.size() >= 5) {
+        if (buffer.size() >= 2) {
             PayloadCore loteFinalAgregado = agregar();
             rabbitTemplate.convertAndSend("backend-response-queue", loteFinalAgregado);
             buffer.clear();
             System.out.println(">> Enviado resultado agregado para o backend");
 
-            String resposta = new ObjectMapper().writeValueAsString(
-                    loteFinalAgregado);
+            rabbitTemplate.convertAndSend("backend-response-queue", loteFinalAgregado);
 
-            rabbitTemplate.convertAndSend("backend-response-queue", resposta);
             System.out.printf(">> node: [%s] Resposta enviada para o backend", nodeId);
         }
 
