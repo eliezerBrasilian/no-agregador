@@ -16,7 +16,7 @@ spring:
         all: true
   data:
     mongodb:
-      uri: mongodb://localhost:27017/agregador_db
+      uri: mongodb://mongo:27017/agregador_db
 
 core:
   queue: lotes_de_dados
