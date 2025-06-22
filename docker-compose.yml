@@ -4,9 +4,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/agregador_db
-    depends_on:
-      - mongodb
+      - SPRING_DATA_MONGODB_URI=mongodb://host.docker.internal:27017/agregador_db
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
@@ -14,21 +12,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  mongodb:
-    image: mongo:7.0
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_DATABASE=agregador_db
-    volumes:
-      - mongodb_data:/data/db
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-volumes:
-  mongodb_data:
