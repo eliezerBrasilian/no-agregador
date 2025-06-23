@@ -1,5 +1,10 @@
 package app;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -75,6 +80,9 @@ public class CoreMessageListener {
 
             String urlPostNodeBackend = "http://backend-node:4012/api/votar/update-from-no-agregador";
 
+            // erros-no-agregador
+            // https://discord.com/api/webhooks/1386810073761841223/4uwB1YeU9agZJoiZBDY-Z0lNgSb7dZHKpJYxhQm6Tx-CRa0e9Ql5pu4zl9jilTjqb4lx
+
             ResponseEntity<String> postResponse = restTemplate.postForEntity(
                     urlPostNodeBackend,
                     dadosAgregados,
@@ -89,6 +97,38 @@ public class CoreMessageListener {
 
         } catch (Exception e) {
             System.err.println("Erro ao buscar ou salvar dados agregados: " + e.getMessage());
+            SendError(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+     public static void SendError(String error) {
+        String webhookUrl = "https://discord.com/api/webhooks/1386810073761841223/4uwB1YeU9agZJoiZBDY-Z0lNgSb7dZHKpJYxhQm6Tx-CRa0e9Ql5pu4zl9jilTjqb4lx";
+
+        String json = String.format("""
+                {
+                    "content": "⚠️ **ERRO**: %s\\n🕒 %s"
+                }
+                """, error, Instant.now());
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(webhookUrl))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                System.out.println("Mensagem enviada com sucesso! Status: " + response.statusCode());
+            } else {
+                System.err.println("Falha ao enviar mensagem. Status: " + response.statusCode());
+                System.err.println("Resposta: " + response.body());
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao enviar mensagem para o Discord:");
             e.printStackTrace();
         }
     }
